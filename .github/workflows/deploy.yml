@@ -1,4 +1,4 @@
-name: Deploy Website to Azure VM
+ name: Deploy Website to Azure VM
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
           sudo apt-get update
 
           if [ ! -d ~/github-actions-demo-3d ]; then
-              git clone https://github.com/manoop98/github-actions-demo-3d.git
+              git clone https://github.com/roshanhaneen05/nova-3d-cicd.git
           fi
 
           cd ~/github-actions-demo-3d
