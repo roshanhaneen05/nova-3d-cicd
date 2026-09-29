@@ -56,4 +56,4 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          curl --fail http://${{ secrets.HOST }}
+          curl --fail --connect-timeout 10 --max-time 20 http://${{ secrets.HOST }}
