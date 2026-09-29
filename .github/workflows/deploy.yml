@@ -1,4 +1,4 @@
- name: Deploy Website to Azure VM
+name: Deploy Website to Azure VM
 
 on:
   push:
@@ -18,32 +18,32 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Azure VM
         run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_ed25519 \
-              ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_ed25519 \
+            ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'EOF'
 
-          sudo apt-get update
-
-          if [ ! -d ~/github-actions-demo-3d ]; then
-              git clone https://github.com/roshanhaneen05/nova-3d-cicd.git
+          if [ ! -d ~/nova-3d-cicd ]; then
+              git clone https://github.com/roshanhaneen05/nova-3d-cicd.git ~/nova-3d-cicd
           fi
 
-          cd ~/github-actions-demo-3d
+          cd ~/nova-3d-cicd
 
           git pull origin main
 
           sudo mkdir -p /var/www/threed-demo
 
-          sudo cp -r * /var/www/threed-demo/
+          sudo rm -rf /var/www/threed-demo/*
+
+          sudo cp -r index.html css js vendor /var/www/threed-demo/
 
           sudo chown -R www-data:www-data /var/www/threed-demo
+
+          sudo nginx -t
 
           sudo systemctl restart nginx
 
@@ -53,4 +53,4 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          curl http://${{ secrets.HOST }}
+          curl --fail http://${{ secrets.HOST }}
